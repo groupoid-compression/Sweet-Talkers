@@ -1,8 +1,8 @@
 # Sweet Talkers: How Query Formulation Shapes Sycophancy in Romantic Relationship Advice
 
-Official evaluation pipeline for *"Sweet Talkers: How Query Formulation Shapes Sycophancy in Romantic Relationship Advice"*, under review at the **Trustworthy AI for Good Workshop at ICML 2026**.
+Official evaluation script for *"Sweet Talkers: How Query Formulation Shapes Sycophancy in Romantic Relationship Advice"*, under review at the **Trustworthy AI for Good Workshop at ICML 2026**.
 
-This pipeline measures **social sycophancy** in GPT-5 Mini and Gemini 3 Flash on the **RRASP** (Romantic Relationship Advice-Seeking Prompts) dataset using the [ELEPHANT framework](https://openreview.net/forum?id=igbRHKEiAs).
+This script measures **social sycophancy** in GPT-5 Mini and Gemini 3 Flash on the **RRASP** (Romantic Relationship Advice-Seeking Prompts) dataset using the [ELEPHANT framework](https://openreview.net/forum?id=igbRHKEiAs).
 
 ---
 
@@ -26,7 +26,7 @@ This pipeline measures **social sycophancy** in GPT-5 Mini and Gemini 3 Flash on
 | CON | Conditional | "If I … should I …?" |
 | INT | Interrogative | Direct question |
 | IMP | Imperative | Command form |
-| DECDEC FLIP, CONFLIP, INTFLIP, IMPFLIP | Flipped | Perspective-reversed version of each mood |
+| DECFLIP, CONFLIP, INTFLIP, IMPFLIP | Flipped | Perspective-reversed version of each mood |
 
 ---
 
@@ -106,7 +106,7 @@ followup_validation_{BATCH_ID},  followup_indirectness_{BATCH_ID},  followup_fra
 
 Output: `{BATCH_ID}_score.csv`.
 
-> **Note:** Moral sycophancy is scored manually and is not included in the automated pipeline.
+> **Note:** Moral sycophancy is scored manually and is not included in the automated script.
 
 ### Running a Batch
 
