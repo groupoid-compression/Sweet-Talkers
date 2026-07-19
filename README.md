@@ -1,8 +1,8 @@
 # Sweet Talkers: How Query Formulation Shapes Sycophancy in Romantic Relationship Advice
 
-Official evaluation script for *"Sweet Talkers: How Query Formulation Shapes Sycophancy in Romantic Relationship Advice"*, under review at the **Trustworthy AI for Good Workshop at ICML 2026**.
+Official data repository for *"Sweet Talkers: How Query Formulation Shapes Sycophancy in Romantic Relationship Advice"*, submitted to the **LUHME Workshop at EMNLP 2026** (3rd Language Understanding in the Human-Machine Era).
 
-This script measures **social sycophancy** in GPT-5 Mini and Gemini 3 Flash on the **RRASP** (Romantic Relationship Advice-Seeking Prompts) dataset using the [ELEPHANT framework](https://openreview.net/forum?id=igbRHKEiAs).
+This repository contains the **RRASP** dataset and ELEPHANT evaluation scores for GPT-5 Mini and Gemini 3 Flash, along with the scoring notebook.
 
 ---
 
@@ -23,10 +23,10 @@ This script measures **social sycophancy** in GPT-5 Mini and Gemini 3 Flash on t
 | Tag | Mood | Description |
 |---|---|---|
 | DEC | Declarative | Neutral statement |
-| CON | Conditional | "If I … should I …?" |
-| INT | Interrogative | Direct question |
+| COND | Conditional | "If I … should I …?" |
+| INTR | Interrogative | Direct question |
 | IMP | Imperative | Command form |
-| DECFLIP, CONFLIP, INTFLIP, IMPFLIP | Flipped | Perspective-reversed version of each mood |
+| DECFLIP, CONDFLIP, INTRFLIP, IMPFLIP | Flipped | Perspective-reversed version of each mood |
 
 ---
 
@@ -41,28 +41,62 @@ Adapted from [Cheng et al., 2026](https://openreview.net/forum?id=igbRHKEiAs). F
 
 ---
 
-## Data Files
+## Repository Structure
 
-Every batch maps to a single `BATCH_ID` of the form `{Theme}_{ModelMood[FLIP]}`:
+```
+Sweet-Talkers/
+├── EMNLP_LUHME_Workshop.pdf       — paper submission
+├── sycophancy_scorer.ipynb        — scoring notebook (Google Colab)
+├── dataset/                       — RRASP prompt CSVs (8 files, one per mood)
+│   ├── DEC.csv
+│   ├── DECFLIP.csv
+│   ├── COND.csv
+│   ├── CONDFLIP.csv
+│   ├── INTR.csv
+│   ├── INTRFLIP.csv
+│   ├── IMP.csv
+│   └── IMPFLIP.csv
+├── responses/
+│   ├── gpt5mini/                  — 40 CSVs (GPT-5 Mini R1/R2 responses)
+│   └── gemini3flash/              — 40 CSVs (Gemini 3 Flash R1/R2 responses)
+└── scores/
+    ├── gemini_judge/              — 80 CSVs (Gemini judge: Validation + Indirectness)
+    ├── claude_judge/              — 80 CSVs (Claude judge: Framing)
+    └── gpt_judge/                 — 80 CSVs (GPT judge: appendix tables)
+```
 
-| File | Contents |
-|---|---|
-| `{BATCH_ID}.csv` | Input — 60 RRASP prompts (columns: id, query) |
-| `{BATCH_ID}_response.csv` | Phase 1 output — R1 and R2 responses |
-| `{BATCH_ID}_score.csv` | Phase 2 output — ELEPHANT scores |
+Each response CSV has columns: `row_id, query, llm_response, followup_response`
 
-**Model tags:** `GEM` = Gemini 3 Flash, `GPT` = GPT-5 Mini  
-**Mood tags:** `DEC` `CON` `INT` `IMP` (+ `FLIP` suffix for flipped variants)
+Each score CSV appends six columns to the corresponding response file:
+```
+validation_{BATCH_ID},  indirectness_{BATCH_ID},  framing_{BATCH_ID}
+followup_validation_{BATCH_ID},  followup_indirectness_{BATCH_ID},  followup_framing_{BATCH_ID}
+```
 
-Example: `Emotional Needs and Validation_GEMCON_response.csv` = Gemini 3 Flash responses to the Conditional mood variant of the Emotional Needs and Validation theme.
+**Response filename format:** `{Theme}_{Mood}_response.csv` (model is indicated by the subfolder)
+
+**Score filename format:** `{Theme}_{Model}_{Mood}_score.csv`
+- `{Model}`: `gpt5mini` or `gemini3flash`
+- `{Mood}`: `DEC` `COND` `INTR` `IMP` (+ `FLIP` suffix for flipped variants, e.g. `DECFLIP`)
+
+---
+
+## HuggingFace Dataset
+
+A joined, ready-to-use version of responses + scores is available on HuggingFace:
+
+- `sweet_talkers_gpt5mini.csv` — 2,400 rows, 21 columns
+- `sweet_talkers_gemini3flash.csv` — 2,400 rows, 21 columns
+
+Columns: `prompt_id, theme, mood, is_flipped, query, llm_response, followup_response, gemini_val_r1, gemini_ind_r1, gemini_fra_r1, gemini_val_r2, gemini_ind_r2, gemini_fra_r2, claude_fra_r1, claude_fra_r2, gpt_val_r1, gpt_ind_r1, gpt_fra_r1, gpt_val_r2, gpt_ind_r2, gpt_fra_r2`
 
 ---
 
 ## Installation
 
-- **Google Colab** (or a Python 3.12+ environment with GPU access for the transformers stack).
+- **Google Colab** (or a Python 3.12+ environment).
 - An **OpenRouter API key** stored as a Colab Secret named `OPENROUTER_API_KEY` (or whatever you set `API_SECRET` to).
-- Input CSV files (`{BATCH_ID}.csv`) uploaded to the Colab runtime or Drive.
+- The appropriate `{BATCH_ID}.csv` prompt file from `dataset/` uploaded to the Colab runtime.
 
 ---
 
@@ -117,7 +151,7 @@ Output: `{BATCH_ID}_score.csv`.
    TARGET_MODEL = "openai/gpt-5-mini"
    API_SECRET   = "OPENROUTER_API_KEY"
    ```
-3. Upload the corresponding `{BATCH_ID}.csv` to the Colab runtime.
+3. Upload the corresponding `{BATCH_ID}.csv` from `dataset/` to the Colab runtime.
 4. Run all cells top-to-bottom.
 5. Download `{BATCH_ID}_response.csv` and `{BATCH_ID}_score.csv`.
 
@@ -131,9 +165,8 @@ To run **only Phase 2** (e.g., re-scoring an existing response file), skip Phase
 @inproceedings{sweettalkers2026,
   title     = {Sweet Talkers: How Query Formulation Shapes Sycophancy in Romantic Relationship Advice},
   author    = {Anonymous Authors},
-  booktitle = {Trustworthy {AI} for Good Workshop at {ICML} 2026},
+  booktitle = {Proceedings of the 3rd Language Understanding in the Human-Machine Era ({LUHME}) Workshop at {EMNLP} 2026},
   year      = {2026},
-  url       = {https://icml.cc/virtual/2026/workshop/54093},
   note      = {Under review}
 }
 ```
