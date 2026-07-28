@@ -1,6 +1,6 @@
 # Sweet Talkers: How Query Formulation Shapes Sycophancy in Romantic Relationship Advice
 
-Official data repository for *"Sweet Talkers: How Query Formulation Shapes Sycophancy in Romantic Relationship Advice"*, submitted to the **LUHME Workshop at EMNLP 2026** (3rd Language Understanding in the Human-Machine Era).
+Official data repository for *"Sweet Talkers: How Query Formulation Shapes Sycophancy in Romantic Relationship Advice"*, submitted to the **LUHME Workshop at EMNLP 2026** (3rd Language Understanding in the Human-Machine Era Workshop).
 
 This repository contains the **RRASP** dataset and ELEPHANT evaluation scores for GPT-5 Mini and Gemini 3 Flash, along with the scoring notebook.
 
